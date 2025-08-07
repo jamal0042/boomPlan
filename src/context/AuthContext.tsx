@@ -4,7 +4,7 @@ import axios from 'axios';
 import { User, Role } from '../types'; // Assurez-vous d'importer Role si l'objet User inclut un rôle
 
 // Définissez l'URL de base de votre API PHP
-const API_BASE_URL = 'http://localhost/backend_bp/api'; // Assurez-vous que c'est correct
+const API_BASE_URL = 'http://jamaltech.alwaysdata.net/api'; // Assurez-vous que c'est correct
 
 interface AuthContextType {
   user: User | null;
