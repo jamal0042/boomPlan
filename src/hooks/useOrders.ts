@@ -5,7 +5,7 @@ import { User, Event, Order } from '../types'; // Assurez-vous que Order est bie
 
 // CORRECTION IMPORTANTE: L'URL de base de votre API PHP doit être cohérente.
 // Elle devrait pointer vers le dossier 'api' de votre backend.
-const API_BASE_URL = 'http://localhost/backend_bp/api'; 
+const API_BASE_URL = 'https://jamaltech.alwaysdata.net/api'; 
 
 interface UseOrdersHook {
 fetchUserOrders: () => Promise<Order[]>;

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Event, SearchFilters } from '../types'; // Importez SearchFilters
 
 // Définissez l'URL de base de votre API PHP
-const API_BASE_URL = 'http://localhost/backend_bp/api'; // Assurez-vous que c'est correct
+const API_BASE_URL = 'https://jamaltech.alwaysdata.net/api'; // Assurez-vous que c'est correct
 
 interface UseEventsHook {
   events: Event[];

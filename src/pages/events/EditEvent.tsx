@@ -30,7 +30,7 @@ is_public: boolean;
 // Dynamic tickets will be handled separately from react-hook-form's register
 }
 
-const API_BASE_URL = 'http://jamaltech.alwaysdata.net/api';
+const API_BASE_URL = 'https://jamaltech.alwaysdata.net/api';
 
 const EditEvent: React.FC = () => {
 const { id } = useParams<{ id: string }>();
