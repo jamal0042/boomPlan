@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
@@ -13,7 +13,7 @@ interface LoginFormData {
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { signInUser, isAuthenticated } = useAuth(); // On récupère aussi isAuthenticated
+  const { signInUser, isAuthenticated, user } = useAuth(); // Assurez-vous que votre contexte renvoie l'objet 'user'
   const navigate = useNavigate();
 
   const {
@@ -22,21 +22,38 @@ const Login: React.FC = () => {
     formState: { errors },
   } = useForm<LoginFormData>();
 
+  // Utilisez useEffect pour gérer la redirection si l'utilisateur est déjà connecté
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // Une fois que le composant a connaissance de l'utilisateur et de son rôle
+      // La redirection se fait automatiquement
+      if (user.role_id === 3) {
+        navigate('/admin/dashboard');
+      } else if (user.role_id === 2) {
+        navigate('/organizer/dashboard');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
+
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      // On attend la fin de l'appel asynchrone
-      await signInUser({ email: data.email, password: data.password }); 
+      // signInUser doit retourner l'objet utilisateur avec son rôle_id
+      const loggedInUser = await signInUser({ email: data.email, password: data.password });
+
+      if (loggedInUser) {
+        toast.success('Connexion réussie !');
+
+        // On ne navigue plus ici, c'est le useEffect qui s'en charge
+        // après la mise à jour de l'état d'authentification et de l'utilisateur
+        // dans le contexte.
+      }
       
-      // Si on arrive ici, cela signifie que signInUser a réussi.
-      // Il n'y a plus de raison de vérifier isAuthenticated ici car signInUser
-      // a déjà mis à jour le contexte.
-      toast.success('Connexion réussie !'); 
-      navigate('/');
-      
-    } catch (error: any) { 
+    } catch (error: any) {
       console.error("Erreur lors de la connexion:", error);
-      toast.error(error.message || "Échec de la connexion. Veuillez vérifier vos identifiants."); 
+      toast.error(error.message || "Échec de la connexion. Veuillez vérifier vos identifiants.");
     } finally {
       setIsLoading(false);
     }
