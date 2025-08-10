@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
-import toast from 'react-hot-toast'; 
+import toast from 'react-hot-toast';
 
 interface LoginFormData {
   email: string;
@@ -13,8 +13,7 @@ interface LoginFormData {
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  // CORRECTION: Utiliser la nouvelle fonction signInUser du contexte
-  const { signInUser } = useAuth(); 
+  const { signInUser, isAuthenticated } = useAuth(); // On récupère aussi isAuthenticated
   const navigate = useNavigate();
 
   const {
@@ -24,12 +23,17 @@ const Login: React.FC = () => {
   } = useForm<LoginFormData>();
 
   const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      // CORRECTION: Appeler signInUser avec l'email et le mot de passe
+      // On attend la fin de l'appel asynchrone
       await signInUser({ email: data.email, password: data.password }); 
+      
+      // Si on arrive ici, cela signifie que signInUser a réussi.
+      // Il n'y a plus de raison de vérifier isAuthenticated ici car signInUser
+      // a déjà mis à jour le contexte.
       toast.success('Connexion réussie !'); 
       navigate('/');
+      
     } catch (error: any) { 
       console.error("Erreur lors de la connexion:", error);
       toast.error(error.message || "Échec de la connexion. Veuillez vérifier vos identifiants."); 
