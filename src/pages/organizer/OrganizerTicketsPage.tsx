@@ -1,8 +1,13 @@
+// src/pages/organizer/OrganizerTicketsPage.tsx
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircleIcon, ArrowRightOnRectangleIcon, TicketIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, TicketIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
-import { toast } from 'react-toastify'; // j'utilise pas encore react-toastify pour les notifications
+
+// Importez le composant ToastContainer et les styles nécessaires
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Définition des types pour les données simulées
 interface Ticket {
@@ -90,7 +95,7 @@ const updatedTickets = tickets.map(ticket =>
     ticket.id === ticketId ? { ...ticket, status: 'used' } : ticket
 );
 setTickets(updatedTickets);
-// Afficher une notification
+// Afficher une notification de succès
 toast.success(`Le ticket ${ticketId} a été validé avec succès.`);
 };
 
@@ -138,6 +143,19 @@ return (
 
 return (
 <div className="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8">
+    {/* C'est le composant crucial qui rend les notifications */}
+    <ToastContainer
+    position="top-right"
+    autoClose={5000}
+    hideProgressBar={false}
+    newestOnTop={false}
+    closeOnClick
+    rtl={false}
+    pauseOnFocusLoss
+    draggable
+    pauseOnHover
+    />
+
     <div className="max-w-7xl mx-auto">
     <h1 className="text-4xl font-extrabold text-gray-900 mb-6 border-b pb-4">
         Tickets de mes Événements
