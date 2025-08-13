@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircleIcon, ArrowRightOnRectangleIcon, TicketIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
-import { toast } from 'react-toastify'; // Supposons que vous utilisez react-toastify pour les notifications
+import { toast } from 'react-toastify'; // j'utilise pas encore react-toastify pour les notifications
 
 // Définition des types pour les données simulées
 interface Ticket {
