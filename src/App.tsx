@@ -1,7 +1,7 @@
 // src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast'; // Importez Toaster
+import { Toaster } from 'react-hot-toast'; 
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/layout/Navbar';
@@ -15,12 +15,12 @@ import Events from './pages/events/Events';
 import EventDetail from './pages/events/EventDetail';
 import Cart from './pages/Cart';
 import CreateEvent from './pages/organizer/CreateEvent';
-import EditEvent from './pages/events/EditEvent'; // AJOUTÉ : Importation du composant EditEvent
+import EditEvent from './pages/events/EditEvent';
 import Profile from './pages/Profile'; 
 import OrganizerDashboard from './pages/organizer/OrganizerDashboard';
-import NotFound from './pages/NotFound'; // Importez le composant NotFound
+import NotFound from './pages/NotFound';
 
-// Import des pages statiques (maintenant des composants React)
+// Import des pages statiques
 import AboutPage from './pages/Static/AboutPage';
 import PrivacyPolicyPage from './pages/Static/PrivacyPolicyPage';
 import FAQPage from './pages/Static/FAQPage';
@@ -31,6 +31,13 @@ import HelpPage from './pages/Static/HelpPage';
 import ContactPage from './pages/Static/ContactPage';
 import PricingPage from './pages/Static/PricingPage';
 import SystemStatusPage from './pages/Static/SystemStatusPage';
+
+// Importation de la nouvelle page de tickets pour les organisateurs
+import OrganizerTicketsPage from './pages/organizer/OrganizerTicketsPage';
+
+// AJOUTÉ : Importation des pages d'administration
+import AdminDashboard from './pages/admin/AdminDashboard';
+import UserManagement from './pages/admin/UserManagement';
 
 
 function App() {
@@ -58,14 +65,16 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/events" element={<Events />} />
                 <Route path="/events/:id" element={<EventDetail />} />
-                {/* AJOUTÉ : Route pour éditer un événement spécifique */}
                 <Route path="/events/:id/edit" element={<EditEvent />} /> 
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/create-event" element={<CreateEvent />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/organizer/dashboard" element={<OrganizerDashboard />} /> 
+                
+                {/* NOUVELLE ROUTE AJOUTÉE : Pour la page de gestion des tickets des organisateurs */}
+                <Route path="/organizer/tickets" element={<OrganizerTicketsPage />} />
 
-                {/* Routes pour les pages statiques (maintenant des composants React) */}
+                {/* Routes pour les pages statiques */}
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                 <Route path="/faq" element={<FAQPage />} />
@@ -76,6 +85,10 @@ function App() {
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/status" element={<SystemStatusPage />} />
+                
+                {/* AJOUTÉ : Routes pour l'administration */}
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/users" element={<UserManagement />} />
 
                 {/* Fallback pour les routes non trouvées */}
                 <Route path="*" element={<NotFound />} /> 
