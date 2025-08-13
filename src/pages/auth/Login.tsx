@@ -82,9 +82,9 @@ const Login: React.FC = () => {
           <div className="mb-6 p-4 bg-blue-50 rounded-lg">
             <h3 className="text-sm font-medium text-blue-800 mb-2">Exemples de comptes:</h3>
             <div className="text-xs text-blue-700 space-y-1">
-              <div>👤 Utilisateur: utilisateur@gmail.com / password</div>
-              <div>🎯 Organisateur: organisateur@gmail.com / password</div>
-              <div>👑 Admin: admin@gmail.com / password</div>
+              <div> Utilisateur: utilisateur@gmail.com</div>
+              <div> Organisateur: organisateur@gmail.com</div>
+              <div> Admin: admin@gmail.com</div>
             </div>
           </div>
 
