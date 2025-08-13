@@ -80,7 +80,7 @@ const Login: React.FC = () => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {/* Demo accounts info */}
           <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-800 mb-2">
+            <h3 className="text-sm font-medium text-blue-800 mb-2"></h3>
             <div className="text-xs text-blue-700 space-y-1">
             </div>
           </div>
