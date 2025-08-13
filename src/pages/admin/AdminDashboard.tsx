@@ -11,15 +11,17 @@ ChartBarIcon,
 import { useAuth } from '../../context/AuthContext'; // Supposons que vous ayez un contexte d'authentification
 
 const AdminDashboard: React.FC = () => {
-// En production, vous devrez vérifier si l'utilisateur a le rôle 'admin'
-const { user } = useAuth();
-const isAdmin = user && user.role === 'admin'; // Exemple de vérification de rôle
+// CORRECTION: Utiliser user?.role_id === 3 pour vérifier le rôle d'administrateur
+const { user, isAuthenticated } = useAuth();
+const isAdmin = isAuthenticated && user?.role_id === 3;
 
-if (!user || !isAdmin) {
+if (!isAdmin) {
 return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 text-red-600">
     <h1 className="text-3xl font-bold mb-4">Accès refusé</h1>
-    <p className="text-lg">Vous n'avez pas les autorisations nécessaires pour accéder à ce tableau de bord.</p>
+    <p className="text-lg text-center">
+        Vous n'avez pas les autorisations nécessaires pour accéder à ce tableau de bord.
+    </p>
     <Link to="/" className="mt-6 inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
         Retour à l'accueil
     </Link>
@@ -27,7 +29,6 @@ return (
 );
 }
 
-// Les "cartes" du tableau de bord
 const dashboardCards = [
 {
     title: 'Gestion des utilisateurs',
