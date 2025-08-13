@@ -8,13 +8,22 @@ CalendarIcon,
 TicketIcon,
 ChartBarIcon,
 } from '@heroicons/react/24/outline';
-import { useAuth } from '../../context/AuthContext'; // Supposons que vous ayez un contexte d'authentification
+import { useAuth } from '../../context/AuthContext';
 
 const AdminDashboard: React.FC = () => {
-// CORRECTION: Utiliser user?.role_id === 3 pour vérifier le rôle d'administrateur
-const { user, isAuthenticated } = useAuth();
-const isAdmin = isAuthenticated && user?.role_id === 3;
+const { user, isAuthenticated, loading } = useAuth();
 
+// Affiche un indicateur de chargement en attendant les données d'authentification
+if (loading) {
+return (
+    <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+    </div>
+);
+}
+
+// Vérification de sécurité redondante, mais utile si la route n'est pas protégée
+const isAdmin = isAuthenticated && user?.role_id === 3;
 if (!isAdmin) {
 return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 text-red-600">
