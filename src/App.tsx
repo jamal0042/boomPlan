@@ -102,7 +102,7 @@ function App() {
 
                 {/* Routes d'administration protégées par le rôle */}
                 <Route element={<AdminProtectedRoute />}>
-                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/admin/users" element={<UserManagement />} />
                 </Route>
 
