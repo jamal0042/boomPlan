@@ -1,164 +1,219 @@
-// src/pages/admin/UserManagement.tsx
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, TicketIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
-import toast from 'react-hot-toast';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-// Définition d'un type pour nos données utilisateur simulées
-interface User {
+interface Ticket {
 id: string;
-name: string;
-email: string;
-role: 'user' | 'organizer' | 'admin';
-role_id: 1 | 2 | 3; // CORRECTION: Ajout de role_id pour correspondre à votre Navbar
-status: 'Active' | 'Inactive' | 'Pending';
+eventName: string;
+ticketHolderName: string;
+ticketType: string;
+purchaseDate: string;
+status: 'valid' | 'pending' | 'used';
+eventUrl: string;
+ticketPrice: number;
 }
 
-// Données fictives pour simuler un appel d'API
-const mockUsers: User[] = [
-{ id: '1', name: 'Alice Dupont', email: 'alice.d@example.com', role: 'user', role_id: 1, status: 'Active' },
-{ id: '2', name: 'Bob Martin', email: 'bob.m@example.com', role: 'organizer', role_id: 2, status: 'Active' },
-{ id: '3', name: 'Charlie Lefevre', email: 'charlie.l@example.com', role: 'admin', role_id: 3, status: 'Active' },
-{ id: '4', name: 'Diana Dubois', email: 'diana.d@example.com', role: 'user', role_id: 1, status: 'Inactive' },
-{ id: '5', name: 'Eve Bernard', email: 'eve.b@example.com', role: 'user', role_id: 1, status: 'Pending' },
-];
+const OrganizerTicketsPage: React.FC = () => {
+const { user } = useAuth();
+const [tickets, setTickets] = useState<Ticket[]>([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState<string | null>(null);
 
-const UserManagement: React.FC = () => {
-const { user, isAuthenticated } = useAuth();
-// CORRECTION: Utiliser user?.role_id === 3 pour vérifier le rôle d'administrateur
-const isAdmin = isAuthenticated && user?.role_id === 3; 
+const fetchOrganizerTickets = async () => {
+try {
+    setLoading(true);
 
-const [users, setUsers] = useState<User[]>([]);
-const [loading, setLoading] = useState<boolean>(true);
+    // --- Données mockées pour démonstration ---
+    const mockTickets: Ticket[] = [
+    {
+        id: 'TKT-12345',
+        eventName: 'Conférence Tech 2024',
+        ticketHolderName: 'Jean Dupont',
+        ticketType: 'VIP',
+        purchaseDate: '2024-05-10',
+        status: 'valid',
+        eventUrl: '/events/tech-conference-2024',
+        ticketPrice: 150,
+    },
+    {
+        id: 'TKT-67890',
+        eventName: 'Festival de Musique d\'Été',
+        ticketHolderName: 'Marie Curie',
+        ticketType: 'Standard',
+        purchaseDate: '2024-05-15',
+        status: 'pending',
+        eventUrl: '/events/summer-music-festival',
+        ticketPrice: 50,
+    },
+    {
+        id: 'TKT-11223',
+        eventName: 'Atelier de Cuisine Italienne',
+        ticketHolderName: 'Pierre Bernard',
+        ticketType: 'Standard',
+        purchaseDate: '2024-05-18',
+        status: 'used',
+        eventUrl: '/events/italian-cooking-workshop',
+        ticketPrice: 75,
+    },
+    ];
+
+    setTickets(mockTickets);
+    setError(null);
+} catch (err: unknown) {
+    console.error('Erreur lors de la récupération des tickets:', err);
+
+    if (err instanceof Error) {
+    setError(err.message);
+    } else {
+    setError("Une erreur inattendue s'est produite.");
+    }
+
+    setTickets([]);
+} finally {
+    setLoading(false);
+}
+};
 
 useEffect(() => {
-const fetchUsers = async () => {
-    setLoading(true);
-    try {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setUsers(mockUsers);
-    } catch (error) {
-    toast.error('Erreur lors du chargement des utilisateurs.');
-    console.error('Failed to fetch users:', error);
-    } finally {
-    setLoading(false);
-    }
-};
-
-if (isAdmin) {
-    fetchUsers();
+if (user) {
+    fetchOrganizerTickets();
 }
-}, [isAdmin]);
+}, [user]);
 
-const handleEdit = (userId: string) => {
-toast.info(`Modifier l'utilisateur avec l'ID: ${userId}`);
-// Logique d'édition
+const handleValidateTicket = (ticketId: string) => {
+const updatedTickets = tickets.map(ticket =>
+    ticket.id === ticketId ? { ...ticket, status: 'used' } : ticket
+);
+setTickets(updatedTickets);
+toast.success(`Le ticket ${ticketId} a été validé avec succès.`);
 };
 
-const handleDelete = (userId: string) => {
-toast.error(`Supprimer l'utilisateur avec l'ID: ${userId}`);
-// Logique de suppression
+const getStatusClasses = (status: Ticket['status']) => {
+switch (status) {
+    case 'valid':
+    return 'bg-green-100 text-green-800';
+    case 'pending':
+    return 'bg-yellow-100 text-yellow-800';
+    case 'used':
+    default:
+    return 'bg-gray-100 text-gray-800';
+}
 };
 
-if (!isAdmin) {
+if (!user) {
 return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 text-red-600">
-    <h1 className="text-3xl font-bold mb-4">Accès refusé</h1>
-    <p className="text-lg text-center">
-        Vous n'avez pas les autorisations nécessaires pour accéder à cette page.
-    </p>
-    <Link to="/" className="mt-6 inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-        Retour à l'accueil
+    <div className="text-center p-8">
+    <p className="text-xl font-semibold text-gray-700">Vous devez être connecté pour voir cette page.</p>
+    <Link
+        to="/login"
+        className="mt-4 inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+    >
+        Se connecter
     </Link>
     </div>
 );
 }
 
+if (loading) {
 return (
-<div className="bg-gray-100 min-h-screen p-4 sm:p-6 lg:p-8">
+    <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+    <p className="ml-4 text-lg text-gray-700">Chargement des tickets...</p>
+    </div>
+);
+}
+
+if (error) {
+return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 text-red-600">
+    <ExclamationTriangleIcon className="h-12 w-12 mb-4" />
+    <p className="text-xl font-semibold">{error}</p>
+    </div>
+);
+}
+
+return (
+<div className="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8">
+    <ToastContainer
+    position="top-right"
+    autoClose={5000}
+    hideProgressBar={false}
+    newestOnTop={false}
+    closeOnClick
+    rtl={false}
+    pauseOnFocusLoss
+    draggable
+    pauseOnHover
+    />
+
     <div className="max-w-7xl mx-auto">
     <h1 className="text-4xl font-extrabold text-gray-900 mb-6 border-b pb-4">
-        Gestion des utilisateurs
+        Tickets de mes Événements
     </h1>
     <p className="text-lg text-gray-600 mb-8">
-        Gérez l'ensemble des comptes, des rôles et des permissions de la plateforme.
+        Gérez et validez les tickets vendus pour vos événements.
     </p>
 
-    {loading ? (
-        <div className="flex justify-center items-center py-10">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-        </div>
-    ) : (
-        <div className="bg-white shadow-lg rounded-xl overflow-hidden">
+    {tickets.length > 0 ? (
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
                 <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nom
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Rôle
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Événement</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Détenteur</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type de Ticket</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((userItem) => (
-                <tr key={userItem.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {userItem.name}
+                {tickets.map((ticket) => (
+                <tr key={ticket.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900 flex items-center">
+                        <TicketIcon className="h-5 w-5 mr-2 text-blue-500" />
+                        {ticket.id}
+                    </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                    <Link to={ticket.eventUrl} className="text-sm font-medium text-blue-600 hover:underline">
+                        {ticket.eventName}
+                    </Link>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {userItem.email}
+                    {ticket.ticketHolderName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <span 
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${userItem.role_id === 3 ? 'bg-red-100 text-red-800' :
-                            userItem.role_id === 2 ? 'bg-green-100 text-green-800' :
-                            'bg-gray-100 text-gray-800'
-                        }`}
-                    >
-                        {userItem.role}
-                    </span>
+                    {ticket.ticketType}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                        ${userItem.status === 'Active' ? 'bg-green-100 text-green-800' :
-                            userItem.status === 'Inactive' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-blue-100 text-blue-800'
-                        }`}
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClasses(ticket.status)}`}
                     >
-                        {userItem.status}
+                        {ticket.status === 'valid' ? 'Valide' : ticket.status === 'pending' ? 'En attente' : 'Utilisé'}
                     </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button
-                        onClick={() => handleEdit(userItem.id)}
-                        className="text-indigo-600 hover:text-indigo-900 mx-2"
-                        title="Modifier l'utilisateur"
-                    >
-                        <PencilIcon className="h-5 w-5" />
-                    </button>
-                    <button
-                        onClick={() => handleDelete(userItem.id)}
-                        className="text-red-600 hover:text-red-900 mx-2"
-                        title="Supprimer l'utilisateur"
-                    >
-                        <TrashIcon className="h-5 w-5" />
-                    </button>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {ticket.status === 'valid' && (
+                        <button
+                        onClick={() => handleValidateTicket(ticket.id)}
+                        className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-xs transition-colors flex items-center"
+                        >
+                        <CheckCircleIcon className="h-4 w-4 mr-1" />
+                        Valider
+                        </button>
+                    )}
+                    {ticket.status === 'pending' && (
+                        <span className="text-gray-500 text-xs">En attente de paiement</span>
+                    )}
+                    {ticket.status === 'used' && (
+                        <span className="text-gray-500 text-xs">Ticket déjà utilisé</span>
+                    )}
                     </td>
                 </tr>
                 ))}
@@ -166,10 +221,17 @@ return (
             </table>
         </div>
         </div>
+    ) : (
+        <div className="text-center p-8 bg-white rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold text-gray-800">Aucun ticket trouvé.</h2>
+        <p className="mt-2 text-gray-600">
+            Il se peut que vous n'ayez pas encore vendu de tickets pour vos événements.
+        </p>
+        </div>
     )}
     </div>
 </div>
 );
 };
 
-export default UserManagement;
+export default OrganizerTicketsPage;
